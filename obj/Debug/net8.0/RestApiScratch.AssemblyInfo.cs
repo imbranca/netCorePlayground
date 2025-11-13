@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RestApiScratch")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb107fc0ef87120b92298ac68a6e3a44bc508d6c")]
 [assembly: System.Reflection.AssemblyProductAttribute("RestApiScratch")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RestApiScratch")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
