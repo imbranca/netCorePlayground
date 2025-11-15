@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,21 +16,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                  options.Authority = builder.Configuration["Jwt:Authority"];
-                  options.Audience = builder.Configuration["Jwt:Audience"];
-                  options.TokenValidationParameters = new TokenValidationParameters
-                  {
-                    ValidateAudience = true,
-                    ValidateIssuer = true
-                  };
-                });
-
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -38,9 +24,35 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
   options.Password.RequireDigit = true;
   options.Password.RequiredLength = 8;
 })
+.AddRoleManager<RoleManager<IdentityRole<int>>>()
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+
+builder.Services.AddAuthentication(options =>
+      {
+          options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+          options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      }
+      )
+      .AddJwtBearer(options => {
+       options.RequireHttpsMetadata = false;
+       options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])),
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+
+builder.Services.AddScoped<TokenService, TokenService>();
 builder.Services.AddTransient<ApplicationSeeder>();
 builder.Services.AddTransient<ISeeder, DataSeeder>();
 builder.Services.AddTransient<ISeeder, ProductSeeder>();
@@ -54,8 +66,8 @@ using (var scope = app.Services.CreateScope())
   db.Database.Migrate();
 
   //Excecute seeders
-  // var seeder = scope.ServiceProvider.GetRequiredService<>();
-  // await seeder.SeedAllAsync(db, scope.ServiceProvider);
+  var seeder = scope.ServiceProvider.GetRequiredService<ApplicationSeeder>();
+  await seeder.SeedAllAsync(db, scope.ServiceProvider);
 }
 
 // Configure the HTTP request pipeline.
@@ -66,7 +78,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

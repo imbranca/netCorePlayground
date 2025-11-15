@@ -46,9 +46,9 @@ public class DataSeeder : ISeeder
  
     var simpleUser = "lusho";
     var simpleEmail = "lusho@example.com";
-    var simplePassword = "lusho123";
+    var simplePassword =  "Admin123!";
 
-    if (await userManager.FindByNameAsync(adminUser) == null)
+    if (await userManager.FindByNameAsync(simpleUser) == null)
     {
       var user = new User
       {
@@ -62,7 +62,7 @@ public class DataSeeder : ISeeder
 
       if (result.Succeeded)
       {
-        await userManager.AddToRoleAsync(user, "User");
+        await userManager.AddToRoleAsync(user, "user");
       }
     }
     await context.SaveChangesAsync();

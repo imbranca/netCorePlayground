@@ -9,7 +9,7 @@ public class User : IdentityUser<int>
     // (Identity already includes: UserName, PasswordHash, etc.)
 
     // Example custom fields:
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
    public ICollection<IdentityUserRole<int>> UserRoles { get; set; }
 
 }

@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,18 +11,23 @@ namespace MyApp.Namespace
 
   [Route("api/[controller]")]
   [ApiController]
-  public class AuthController: ControllerBase
-  {
+  public class AuthController: ControllerBase{
     private readonly AppDbContext _context;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
 
+    private readonly TokenService _tokenService;
 
-    public AuthController(AppDbContext productsContext, UserManager<User> userManager, SignInManager<User> signInManager)
+
+    public AuthController(AppDbContext productsContext,
+     TokenService tokenService,
+     UserManager<User> userManager,
+     SignInManager<User> signInManager)
     {
       _context = productsContext;
       _userManager = userManager;
       _signInManager = signInManager;
+      _tokenService = tokenService;
     }
 
     [HttpPost("login")]
@@ -49,11 +55,14 @@ namespace MyApp.Namespace
     
       if (user != null && await _userManager.CheckPasswordAsync(user, loginUser.Password)){
         var roles = await _userManager.GetRolesAsync(user);
+        var accessToken = _tokenService.CreateToken(user);
+
         return Ok(new
         {
           id = user.Id,
           email = user.Email,
-          roles = roles
+          roles = roles,
+          token = accessToken
         });
       }
       else
@@ -63,12 +72,13 @@ namespace MyApp.Namespace
     }
 
 
-    [HttpGet]
+    [HttpGet("list")]
+    [Authorize]
     public async Task<IActionResult> List()
     {
       try
       {
-        return StatusCode(400, new {error = "Error"});
+        return Ok();
       }
       catch (Exception e)
       {
@@ -76,4 +86,5 @@ namespace MyApp.Namespace
       }
     }
   }
+
 }
