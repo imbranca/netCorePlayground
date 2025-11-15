@@ -1,10 +1,15 @@
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RestApiScratch.API.Models;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
-  public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
+      public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
+    {
+    }
   public DbSet<Value> Values { get; set; }
   public DbSet<User> Users { get; set; }
   public DbSet<Product> Products { get; set; }
@@ -13,6 +18,8 @@ public class AppDbContext : DbContext
   public DbSet<Enrollment> Enrollments { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder){
+     base.OnModelCreating(modelBuilder);
+
     // Fluent API goes here
     modelBuilder.Entity<Enrollment>()
         .HasKey(e => new { e.StudentId, e.CourseId });

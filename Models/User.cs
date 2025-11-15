@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace RestApiScratch.API.Models;
 
-public class User
+
+public class User : IdentityUser<int>
 {
-  public int Id { get; set; }
-  public string UserName { get; set; }
-  public byte[] PasswordHash { get; set; }
-  public byte[] PasswordSalt { get; set; }
+    // Add any custom fields you want here
+    // (Identity already includes: UserName, PasswordHash, etc.)
+
+    // Example custom fields:
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
