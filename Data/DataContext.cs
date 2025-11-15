@@ -10,18 +10,20 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
         : base(options)
     {
     }
-  public DbSet<Value> Values { get; set; }
-  public DbSet<User> Users { get; set; }
-  public DbSet<Product> Products { get; set; }
-  public DbSet<Course> Courses { get; set; }
-  public DbSet<Student> Students { get; set; }
-  public DbSet<Enrollment> Enrollments { get; set; }
+    public DbSet<Value> Values { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Course> Courses { get; set; }
+    public DbSet<Student> Students { get; set; }
+    public DbSet<Enrollment> Enrollments { get; set; }
 
-  protected override void OnModelCreating(ModelBuilder modelBuilder){
-     base.OnModelCreating(modelBuilder);
+    protected override void OnModelCreating(ModelBuilder modelBuilder){
+      base.OnModelCreating(modelBuilder);
 
-    // Fluent API goes here
-    modelBuilder.Entity<Enrollment>()
-        .HasKey(e => new { e.StudentId, e.CourseId });
-  }
+      // Fluent API goes here
+      modelBuilder.Entity<Enrollment>()
+          .HasKey(e => new { e.StudentId, e.CourseId });
+
+      modelBuilder.Entity<Product>().Property(x=> x.Price).HasPrecision(18,2);
+    }
 }
