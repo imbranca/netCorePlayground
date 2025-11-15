@@ -10,9 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -45,11 +49,13 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+  //Migrate
   var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
   db.Database.Migrate();
 
-  var seeder = scope.ServiceProvider.GetRequiredService<ApplicationSeeder>();
-  await seeder.SeedAllAsync(db, scope.ServiceProvider);
+  //Excecute seeders
+  // var seeder = scope.ServiceProvider.GetRequiredService<>();
+  // await seeder.SeedAllAsync(db, scope.ServiceProvider);
 }
 
 // Configure the HTTP request pipeline.
@@ -60,11 +66,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-  public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

@@ -10,4 +10,6 @@ public class User : IdentityUser<int>
 
     // Example custom fields:
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+   public ICollection<IdentityUserRole<int>> UserRoles { get; set; }
+
 }

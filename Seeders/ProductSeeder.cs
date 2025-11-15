@@ -13,7 +13,7 @@ public class ProductSeeder : ISeeder
         var faker = new Faker<Product>()
             .RuleFor(x => x.Name, f => f.Commerce.ProductName())
             .RuleFor(x => x.Price, f => f.Random.Decimal(5, 500));
-
+  
       context.Products.AddRange(faker.Generate(50));
       await context.SaveChangesAsync();
   }
