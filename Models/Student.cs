@@ -3,7 +3,13 @@ namespace RestApiScratch.API.Models;
 public class Student
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public int UserId {get; set;}
+    public User User {get; set;}
+    public string HomeAddress {get;set;}
+    public bool HasInsurance {get;set;}
+    public bool HasDependents {get;set;}
 
-    public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+    public int Status { get; set; } //1. enrolled 2. regular
+
+    // public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

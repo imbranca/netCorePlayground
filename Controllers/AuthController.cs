@@ -59,14 +59,14 @@ namespace MyApp.Namespace
 
       if (user != null && await _userManager.CheckPasswordAsync(user, loginUser.Password))
       {
-        var roles = await _userManager.GetRolesAsync(user);
+        // var roles = await _userManager.GetRolesAsync(user);
         var accessToken = _tokenService.CreateToken(user);
 
         return Ok(new
         {
           id = user.Id,
           email = user.Email,
-          roles = roles,
+          // roles = roles,
           token = accessToken
         });
       }

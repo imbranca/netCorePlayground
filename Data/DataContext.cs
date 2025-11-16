@@ -12,9 +12,12 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     }
     public DbSet<Value> Values { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Profile> Profiles { get; set; }
+    public DbSet<Student> Students { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Course> Courses { get; set; }
-    public DbSet<Student> Students { get; set; }
+    public DbSet<Instructor> Instructors { get; set; }
+    public DbSet<Category> Categories { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder){
@@ -25,5 +28,44 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
           .HasKey(e => new { e.StudentId, e.CourseId });
 
       modelBuilder.Entity<Product>().Property(x=> x.Price).HasPrecision(18,2);
+
+      modelBuilder.Entity<IdentityUserRole<int>>().HasKey(x => new { x.UserId, x.RoleId });
+
+      // Configure ONE role per user
+      modelBuilder.Entity<User>()
+          .HasOne(u => u.Role)
+          .WithMany()
+          .HasForeignKey(u => u.RoleId)
+          .OnDelete(DeleteBehavior.Restrict);
+
+      // Optional 1–1 User → Student
+      modelBuilder.Entity<User>()
+          .HasOne(u => u.Student)
+          .WithOne(s => s.User)
+          .HasForeignKey<Student>(s => s.UserId)
+          .IsRequired(false);
+
+      // Optional 1–1 User → Instructor
+      modelBuilder.Entity<User>()
+          .HasOne(u => u.Instructor)
+          .WithOne(i => i.User)
+          .HasForeignKey<Instructor>(i => i.UserId)
+          .IsRequired(false);
+
+      // Optional 1–1 User → Profile
+      modelBuilder.Entity<User>()
+          .HasOne(u => u.Profile)
+          .WithOne(p => p.User)
+          .HasForeignKey<Profile>(p => p.UserId)
+          .IsRequired(false);
+
+
+      modelBuilder.Entity<User>().HasOne(u => u.Profile);
+
+      modelBuilder.Entity<User>().HasOne(u => u.Student);
+      modelBuilder.Entity<User>().HasOne(u => u.Instructor);
+
+      // OPTIONAL: Remove the join table from EF
+      modelBuilder.Ignore<IdentityUserRole<int>>();
     }
 }

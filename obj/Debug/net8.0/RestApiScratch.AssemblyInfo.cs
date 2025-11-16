@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RestApiScratch")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1255927ee1c681a8708edda10a9729d7463c6bc3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40ebbe7deae607ad6b6187efa18b48f89b86694e")]
 [assembly: System.Reflection.AssemblyProductAttribute("RestApiScratch")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RestApiScratch")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
