@@ -24,7 +24,7 @@ public class TokenService
     public async Task<string> CreateToken(User user)
     {
         var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
-        var token = GenerateAccessToken(user.UserName);
+        var token = GenerateAccessToken(user);
         // var token = CreateJwtToken(
         //     CreateClaims(user),
         //     CreateSigningCredentials(),
@@ -38,12 +38,14 @@ public class TokenService
     }
 
     // Generating token based on user information
-private JwtSecurityToken GenerateAccessToken(string userName)
+    private JwtSecurityToken GenerateAccessToken(User user)
     {
         // Create user claims
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, userName),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email)
             // Add additional claims as needed (e.g., roles, etc.)
         };
 

@@ -253,3 +253,4 @@
 /Users/antian/Code/netCore/RestApiScratch/obj/Debug/net8.0/RestApiScratch.genruntimeconfig.cache
 /Users/antian/Code/netCore/RestApiScratch/obj/Debug/net8.0/ref/RestApiScratch.dll
 /Users/antian/Code/netCore/RestApiScratch/bin/Debug/net8.0/Bogus.dll
+/Users/antian/Code/netCore/RestApiScratch/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.Google.dll
