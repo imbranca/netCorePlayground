@@ -31,11 +31,28 @@ public class UsersSeeder : ISeeder{
             user.PasswordHash = passwordHasher.HashPassword(user, "P@ss123");
         });
 
-    context.Users.AddRange(userFaker.Generate(10));
+    var generatedUsers = userFaker.Generate(10);
+    context.Users.AddRange(generatedUsers);
     await context.SaveChangesAsync();
 
+    // Get the roleId for "user"
+    var userRoleId = roles.First(r => r.Name == "user").Id;
+
+    // Load only users with the "user" role
+  var usersWithUserRole = context.Users
+    .Where(u => u.RoleId == userRoleId)
+    .ToList();
+
     //SEED Students
-    // var studentsFaker = new Faker<Student>();
+    var studentsFaker = new Faker<Student>()
+        .RuleFor(s => s.HasDependents, f=>f.Random.Bool())
+        .RuleFor(s => s.HasInsurance, f=>f.Random.Bool())
+        .RuleFor(s=>s.HomeAddress, f=>f.Address.FullAddress())
+        .RuleFor(s=> s.UserId, f=>f.PickRandom(usersWithUserRole).Id)
+        ;
+    var generatedStudents = studentsFaker.Generate(10);
+    context.Students.AddRange(generatedStudents);
+    await context.SaveChangesAsync();
 
     //SEED Instructors
   }

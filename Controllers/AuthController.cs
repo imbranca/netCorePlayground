@@ -53,9 +53,15 @@ namespace MyApp.Namespace
       //     // add more fields as needed
       // };
       // return Ok(tempUser);
-      var user = await _userManager.FindByEmailAsync(loginUser.Email);
+      // Get user using email
+      // var user = await _userManager.FindByEmailAsync(loginUser.Email);
+
       // var loggeds = _signInManager.CheckPasswordSignInAsync(user, loginUser.Password, false);
       // var logged = await _signInManager.PasswordSignInAsync(user.UserName, loginUser.Password, false, false);
+
+      var user = await _context.Users
+        .Include(u => u.Role)
+        .FirstAsync(x => x.Email == loginUser.Email);
 
       if (user != null && await _userManager.CheckPasswordAsync(user, loginUser.Password))
       {
@@ -66,7 +72,7 @@ namespace MyApp.Namespace
         {
           id = user.Id,
           email = user.Email,
-          // roles = roles,
+          role = user.Role.Name,
           token = accessToken
         });
       }
@@ -79,6 +85,7 @@ namespace MyApp.Namespace
 
     [HttpGet("list")]
     [Authorize]
+    [Permission("Administrator")]
     public async Task<IActionResult> List()
     {
       try

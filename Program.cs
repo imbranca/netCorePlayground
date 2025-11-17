@@ -72,7 +72,13 @@ builder.Services.AddAuthentication(options =>
         // googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     });
 
-
+  builder.Services.AddAuthorization(options =>
+  {
+      options.AddPolicy("Role:Administrator", policy =>
+          policy.RequireClaim("role", "admin"));
+      options.AddPolicy("Role:Instructor", policy =>
+          policy.RequireClaim("role", "instructor"));
+  });
 
 // builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 // {
