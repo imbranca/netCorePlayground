@@ -34,6 +34,13 @@ namespace MyApp.Namespace
       _tokenService = tokenService;
     }
 
+    [HttpGet("blocking")]
+    public IActionResult B()
+    {
+        Thread.Sleep(TimeSpan.FromMinutes(3)); // blocking!
+        return Ok("Hello from endpoint B (after 3 minutes)");
+    }
+
   [HttpPost ("enroll")]
   public async Task<IActionResult> EnrollCourse([FromBody] StudentCourseDTO studentCourseDto)
     {
