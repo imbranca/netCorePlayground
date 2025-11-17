@@ -57,8 +57,7 @@ namespace RestApiScratch.Migrations
 
                     b.HasKey("InstructorId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Instructors");
                 });
@@ -200,10 +199,17 @@ namespace RestApiScratch.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("ProfileId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
+
+                    b.HasIndex("UserId1")
+                        .IsUnique()
+                        .HasFilter("[UserId1] IS NOT NULL");
 
                     b.ToTable("Profiles");
                 });
@@ -216,16 +222,15 @@ namespace RestApiScratch.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CategoryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CategoryId1")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InstructorId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -236,7 +241,9 @@ namespace RestApiScratch.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId1");
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("InstructorId");
 
                     b.ToTable("Courses");
                 });
@@ -306,8 +313,7 @@ namespace RestApiScratch.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Students");
                 });
@@ -408,8 +414,10 @@ namespace RestApiScratch.Migrations
             modelBuilder.Entity("Instructor", b =>
                 {
                     b.HasOne("RestApiScratch.API.Models.User", "User")
-                        .WithOne("Instructor")
-                        .HasForeignKey("Instructor", "UserId");
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -453,8 +461,13 @@ namespace RestApiScratch.Migrations
             modelBuilder.Entity("Profile", b =>
                 {
                     b.HasOne("RestApiScratch.API.Models.User", "User")
+                        .WithOne()
+                        .HasForeignKey("Profile", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("RestApiScratch.API.Models.User", null)
                         .WithOne("Profile")
-                        .HasForeignKey("Profile", "UserId");
+                        .HasForeignKey("Profile", "UserId1");
 
                     b.Navigation("User");
                 });
@@ -462,12 +475,20 @@ namespace RestApiScratch.Migrations
             modelBuilder.Entity("RestApiScratch.API.Models.Course", b =>
                 {
                     b.HasOne("Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId1")
+                        .WithMany("Courses")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Instructor", "Instructor")
+                        .WithMany("Courses")
+                        .HasForeignKey("InstructorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("Instructor");
                 });
 
             modelBuilder.Entity("RestApiScratch.API.Models.Enrollment", b =>
@@ -492,8 +513,10 @@ namespace RestApiScratch.Migrations
             modelBuilder.Entity("RestApiScratch.API.Models.Student", b =>
                 {
                     b.HasOne("RestApiScratch.API.Models.User", "User")
-                        .WithOne("Student")
-                        .HasForeignKey("RestApiScratch.API.Models.Student", "UserId");
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -509,14 +532,19 @@ namespace RestApiScratch.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("Instructor", b =>
+                {
+                    b.Navigation("Courses");
+                });
+
             modelBuilder.Entity("RestApiScratch.API.Models.User", b =>
                 {
-                    b.Navigation("Instructor");
-
-                    b.Navigation("Profile")
-                        .IsRequired();
-
-                    b.Navigation("Student");
+                    b.Navigation("Profile");
                 });
 #pragma warning restore 612, 618
         }

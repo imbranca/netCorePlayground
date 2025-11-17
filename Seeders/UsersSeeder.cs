@@ -31,9 +31,9 @@ public class UsersSeeder : ISeeder{
             user.PasswordHash = passwordHasher.HashPassword(user, "P@ss123");
         });
 
-    var generatedUsers = userFaker.Generate(10);
-    context.Users.AddRange(generatedUsers);
-    await context.SaveChangesAsync();
+    // var generatedUsers = userFaker.Generate(1000);
+    // context.Users.AddRange(generatedUsers);
+    // await context.SaveChangesAsync();
 
     // Get the roleId for "user"
     var userRoleId = roles.First(r => r.Name == "user").Id;
@@ -52,6 +52,27 @@ public class UsersSeeder : ISeeder{
         ;
     var generatedStudents = studentsFaker.Generate(10);
     context.Students.AddRange(generatedStudents);
+    await context.SaveChangesAsync();
+
+    var instructorRoleId = roles.First(r => r.Name == "instructor").Id;
+
+    var userInstructors = context.Users
+    .Where(u => u.RoleId == instructorRoleId)
+    .ToList();
+
+    //SEED Students
+    var instructorFaker = new Faker<Instructor>()
+        .RuleFor(u => u.Initials, f =>
+        {
+            var first = f.Name.FirstName();
+            var last = f.Name.LastName();
+            return $"{first[0]}{last[0]}".ToUpper();
+        })
+        .RuleFor(s => s.HasBachellor, f=>f.Random.Bool())
+        .RuleFor(s=> s.UserId, f=>f.PickRandom(userInstructors).Id);
+
+    var generatedInstructors = instructorFaker.Generate(10);
+    context.Instructors.AddRange(generatedInstructors);
     await context.SaveChangesAsync();
 
     //SEED Instructors

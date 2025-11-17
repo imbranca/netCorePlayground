@@ -88,9 +88,10 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<TokenService, TokenService>();
 builder.Services.AddTransient<ApplicationSeeder>();
-// builder.Services.AddTransient<ISeeder, DataSeeder>();
-// builder.Services.AddTransient<ISeeder, ProductSeeder>();
-// builder.Services.AddTransient<ISeeder, UsersSeeder>();
+  // builder.Services.AddTransient<ISeeder, DataSeeder>();
+  // builder.Services.AddTransient<ISeeder, ProductSeeder>();
+  // builder.Services.AddTransient<ISeeder, UsersSeeder>();
+// builder.Services.AddTransient<ISeeder, CoursesSeeder>();
 
 var app = builder.Build();
 

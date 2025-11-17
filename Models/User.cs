@@ -16,8 +16,8 @@ public class User : IdentityUser<int>
     // Navigation property
     public IdentityRole<int> Role { get; set; }
 
-    public Student? Student { get; set; }
-    public Instructor? Instructor { get; set; }
-    public Profile Profile { get; set; }
+    // public Student? Student { get; set; }
+    // public Instructor? Instructor { get; set; }
+    public Profile? Profile { get; set; }
   //  public ICollection<IdentityUserRole<int>> UserRoles { get; set; }
 }

@@ -7,4 +7,5 @@ public class Instructor
   public bool? HasBachellor{get;set;}
   public int UserId {get; set;}
   public User User {get; set;}
+  public ICollection<Course> Courses {get;set;}
 }
