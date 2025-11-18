@@ -1,6 +1,6 @@
 using RestApiScratch.API.Models;
 
-public class Instructor
+public class Instructor : BaseEntity
 {
   public int InstructorId {get;set;}
   public string? Initials {get;set;}

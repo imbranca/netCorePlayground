@@ -84,13 +84,14 @@ namespace MyApp.Namespace
 
 
     [HttpGet("list")]
-    [Authorize]
-    [Permission("Administrator")]
+    // [Authorize]
+    // [Permission("Administrator")]
     public async Task<IActionResult> List()
     {
       try
       {
-        return Ok();
+        var students = _context.Students.ToList();
+        return Ok(students);
       }
       catch (Exception e)
       {

@@ -1,6 +1,6 @@
 namespace RestApiScratch.API.Models;
 
-public class Enrollment
+public class Enrollment : BaseEntity
 {
   public int StudentId { get; set; }
   public Student Student { get; set; }

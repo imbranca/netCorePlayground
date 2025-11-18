@@ -1,7 +1,7 @@
 
 using RestApiScratch.API.Models;
 
-public class Profile
+public class Profile : BaseEntity
 {
   public int ProfileId { get; set; }
 

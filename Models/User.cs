@@ -9,7 +9,6 @@ public class User : IdentityUser<int>
     // (Identity already includes: UserName, PasswordHash, etc.)
 
     // Example custom fields:
-   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
        // NEW: A user has ONE Role
     public int RoleId { get; set; }
 
@@ -19,5 +18,10 @@ public class User : IdentityUser<int>
     // public Student? Student { get; set; }
     // public Instructor? Instructor { get; set; }
     public Profile? Profile { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+    public DateTime? DeletedAt { get; set; }
   //  public ICollection<IdentityUserRole<int>> UserRoles { get; set; }
 }

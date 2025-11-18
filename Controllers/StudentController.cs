@@ -62,6 +62,5 @@ namespace MyApp.Namespace
           date = enroll.EnrollmentDate
       });
     }
-
   }
 }

@@ -1,4 +1,5 @@
 
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,28 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Category> Categories { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder){
+
       base.OnModelCreating(modelBuilder);
 
-      // Fluent API goes here
-      modelBuilder.Entity<Enrollment>()
+      foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+      {
+          if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+          {
+              var parameter = Expression.Parameter(entityType.ClrType, "e");
+              var deletedAtProperty = Expression.Property(parameter, nameof(BaseEntity.DeletedAt));
+              var nullConstant = Expression.Constant(null, typeof(DateTime?));
+              var body = Expression.Equal(deletedAtProperty, nullConstant);
+
+              var lambda = Expression.Lambda(body, parameter);
+
+              modelBuilder.Entity(entityType.ClrType)
+                  .HasQueryFilter(lambda);
+          }
+      }
+    // Fluent API goes here
+    modelBuilder.Entity<Enrollment>()
           .HasKey(e => new { e.StudentId, e.CourseId });
 
       modelBuilder.Entity<Product>()
@@ -87,18 +105,34 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
       .HasForeignKey(i => i.UserId)
       .OnDelete(DeleteBehavior.NoAction);
 
-modelBuilder.Entity<Profile>()
-    .HasOne(p => p.User)
-    .WithOne()
-    .HasForeignKey<Profile>(p => p.UserId)
-    .OnDelete(DeleteBehavior.NoAction);
+    modelBuilder.Entity<Profile>()
+        .HasOne(p => p.User)
+        .WithOne()
+        .HasForeignKey<Profile>(p => p.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
 
-      modelBuilder.Entity<User>().HasOne(u => u.Profile);
+          modelBuilder.Entity<User>().HasOne(u => u.Profile);
 
-      // modelBuilder.Entity<User>().HasOne(u => u.Student);
-      // modelBuilder.Entity<User>().HasOne(u => u.Instructor);
+          // modelBuilder.Entity<User>().HasOne(u => u.Student);
+          // modelBuilder.Entity<User>().HasOne(u => u.Instructor);
 
-      // OPTIONAL: Remove the join table from EF
-      modelBuilder.Ignore<IdentityUserRole<int>>();
+          // OPTIONAL: Remove the join table from EF
+          modelBuilder.Ignore<IdentityUserRole<int>>();
+        }
+
+    public override int SaveChanges()
+    {
+      foreach (var entry in ChangeTracker.Entries())
+      {
+        if (entry.Entity is BaseEntity auditable)
+        {
+          if (entry.State == EntityState.Added)
+            auditable.CreatedAt = DateTime.UtcNow;
+
+          auditable.UpdatedAt = DateTime.UtcNow;
+        }
+      }
+
+      return base.SaveChanges();
     }
 }

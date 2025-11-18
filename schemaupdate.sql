@@ -3,15 +3,15 @@ Build succeeded.
 warn: Microsoft.EntityFrameworkCore.Model[10626]
       The entity type 'IdentityUserRole' was first mapped explicitly and then ignored. Consider not mapping the entity type in the first place.
 warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
-      The foreign key property 'Course.CategoryId1' was created in shadow state because a conflicting property with the simple name 'CategoryId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+      The foreign key property 'Profile.UserId1' was created in shadow state because a conflicting property with the simple name 'UserId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
 warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
       No store type was specified for the decimal property 'Price' on entity type 'Course'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
 warn: Microsoft.EntityFrameworkCore.Model[10626]
       The entity type 'IdentityUserRole' was first mapped explicitly and then ignored. Consider not mapping the entity type in the first place.
 The entity type 'IdentityUserRole' was first mapped explicitly and then ignored. Consider not mapping the entity type in the first place.
 warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
-      The foreign key property 'Course.CategoryId1' was created in shadow state because a conflicting property with the simple name 'CategoryId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
-The foreign key property 'Course.CategoryId1' was created in shadow state because a conflicting property with the simple name 'CategoryId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+      The foreign key property 'Profile.UserId1' was created in shadow state because a conflicting property with the simple name 'UserId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+The foreign key property 'Profile.UserId1' was created in shadow state because a conflicting property with the simple name 'UserId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
 warn: Microsoft.EntityFrameworkCore.Model.Validation[30000]
       No store type was specified for the decimal property 'Price' on entity type 'Course'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
 No store type was specified for the decimal property 'Price' on entity type 'Course'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
@@ -85,19 +85,6 @@ CREATE TABLE [AspNetUsers] (
 GO
 
 
-CREATE TABLE [Courses] (
-    [Id] int NOT NULL IDENTITY,
-    [Title] nvarchar(max) NOT NULL,
-    [Description] nvarchar(max) NOT NULL,
-    [Price] decimal(18,2) NOT NULL,
-    [CategoryId] nvarchar(max) NOT NULL,
-    [CategoryId1] int NOT NULL,
-    CONSTRAINT [PK_Courses] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_Courses_Categories_CategoryId1] FOREIGN KEY ([CategoryId1]) REFERENCES [Categories] ([CategoryId]) ON DELETE CASCADE
-);
-GO
-
-
 CREATE TABLE [AspNetUserClaims] (
     [Id] int NOT NULL IDENTITY,
     [UserId] int NOT NULL,
@@ -133,11 +120,11 @@ GO
 
 CREATE TABLE [Instructors] (
     [InstructorId] int NOT NULL IDENTITY,
-    [Initials] nvarchar(max) NOT NULL,
-    [HasBachellor] bit NOT NULL,
+    [Initials] nvarchar(max) NULL,
+    [HasBachellor] bit NULL,
     [UserId] int NOT NULL,
     CONSTRAINT [PK_Instructors] PRIMARY KEY ([InstructorId]),
-    CONSTRAINT [FK_Instructors_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_Instructors_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id])
 );
 GO
 
@@ -147,8 +134,10 @@ CREATE TABLE [Profiles] (
     [UserId] int NOT NULL,
     [Bio] nvarchar(max) NOT NULL,
     [Avatar] nvarchar(max) NOT NULL,
+    [UserId1] int NULL,
     CONSTRAINT [PK_Profiles] PRIMARY KEY ([ProfileId]),
-    CONSTRAINT [FK_Profiles_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_Profiles_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]),
+    CONSTRAINT [FK_Profiles_AspNetUsers_UserId1] FOREIGN KEY ([UserId1]) REFERENCES [AspNetUsers] ([Id])
 );
 GO
 
@@ -157,11 +146,25 @@ CREATE TABLE [Students] (
     [Id] int NOT NULL IDENTITY,
     [UserId] int NOT NULL,
     [HomeAddress] nvarchar(max) NOT NULL,
-    [HasInsurance] bit NOT NULL,
-    [HasDependents] bit NOT NULL,
-    [Status] int NOT NULL,
+    [HasInsurance] bit NULL,
+    [HasDependents] bit NULL,
+    [Status] int NULL,
     CONSTRAINT [PK_Students] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_Students_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_Students_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id])
+);
+GO
+
+
+CREATE TABLE [Courses] (
+    [Id] int NOT NULL IDENTITY,
+    [Title] nvarchar(max) NOT NULL,
+    [Description] nvarchar(max) NOT NULL,
+    [Price] decimal(18,2) NOT NULL,
+    [CategoryId] int NOT NULL,
+    [InstructorId] int NOT NULL,
+    CONSTRAINT [PK_Courses] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Courses_Categories_CategoryId] FOREIGN KEY ([CategoryId]) REFERENCES [Categories] ([CategoryId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_Courses_Instructors_InstructorId] FOREIGN KEY ([InstructorId]) REFERENCES [Instructors] ([InstructorId]) ON DELETE CASCADE
 );
 GO
 
@@ -205,7 +208,11 @@ CREATE UNIQUE INDEX [UserNameIndex] ON [AspNetUsers] ([NormalizedUserName]) WHER
 GO
 
 
-CREATE INDEX [IX_Courses_CategoryId1] ON [Courses] ([CategoryId1]);
+CREATE INDEX [IX_Courses_CategoryId] ON [Courses] ([CategoryId]);
+GO
+
+
+CREATE INDEX [IX_Courses_InstructorId] ON [Courses] ([InstructorId]);
 GO
 
 
@@ -217,7 +224,11 @@ CREATE INDEX [IX_Instructors_UserId] ON [Instructors] ([UserId]);
 GO
 
 
-CREATE INDEX [IX_Profiles_UserId] ON [Profiles] ([UserId]);
+CREATE UNIQUE INDEX [IX_Profiles_UserId] ON [Profiles] ([UserId]);
+GO
+
+
+CREATE UNIQUE INDEX [IX_Profiles_UserId1] ON [Profiles] ([UserId1]) WHERE [UserId1] IS NOT NULL;
 GO
 
 
